@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { BN, Program, Provider, web3 } from "@project-serum/anchor";
+import { BN, web3 } from "@project-serum/anchor";
 import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import idl from "configs/idl.json";
 import {
   PHANTOM_WALLET_URL,
   TWITTER_HANDLE,
@@ -9,29 +8,21 @@ import {
 } from "constants/link";
 import twitterLogo from "assets/twitter-logo.svg";
 import "styles/App.css";
+import { TokenAddress } from "constants/TokenAddress";
+import {
+  getConnection,
+  getProgram,
+  getProvider,
+  PROGRAM_ID,
+} from "utils/utils";
 
-const { clusterApiUrl, Connection, PublicKey } = web3;
+const { PublicKey } = web3;
 
-// Get our program's id from the IDL file.
-const programID = new PublicKey(idl.metadata.address);
-
-// Set our network to devnet.
-const network = clusterApiUrl("devnet");
-
-// Controls how we want to acknowledge when a transaction is "done".
-const opts = {
-  preflightCommitment: "processed",
-};
-
-// Token Public key
-const tokenPublicKey = new PublicKey(
-  "CuxuCrT6FCAc5SUoGDoMVuf7UCLwAvzUmseq4a9VBNqw"
-);
-
-const App = () => {
+const App = (props) => {
   const [walletAddress, setWalletAddress] = useState(null);
   const [inputValue, setInputValue] = useState("");
-  const connection = new Connection(network, opts.preflightCommitment);
+  const cluster = props.cluster;
+  const connection = getConnection(cluster);
 
   useEffect(() => {
     const onLoad = async () => {
@@ -68,39 +59,36 @@ const App = () => {
     setInputValue(e.target.value);
   };
 
-  const getProvider = () => {
-    return new Provider(connection, window.solana, opts.preflightCommitment);
-  };
-
   const onSubmit = async () => {
     if (inputValue.length <= 0) {
       alert("Please enter your amount.");
       return;
     }
+
     setInputValue("");
+
     try {
-      const provider = getProvider();
-      const program = new Program(idl, programID, provider);
-      const [_, bumpSeed] = await PublicKey.findProgramAddress([], programID);
+      const provider = getProvider(cluster);
+      const program = getProgram(cluster);
+      const [_, bumpSeed] = await PublicKey.findProgramAddress([], PROGRAM_ID);
 
       const token = new Token(
         connection,
-        tokenPublicKey,
+        TokenAddress.DRT,
         TOKEN_PROGRAM_ID,
         provider.wallet.publicKey
       );
 
       const mintInfo = await token.getMintInfo();
 
-      const ourAssociatedTokens = await token.getOrCreateAssociatedAccountInfo(
-        mintInfo.mintAuthority
-      );
+      const associatedTokenAccount =
+        await token.getOrCreateAssociatedAccountInfo(mintInfo.mintAuthority);
 
       await program.rpc.mintToken(new BN(+inputValue), bumpSeed, {
         accounts: {
           token: token.publicKey,
           tokenAuthority: mintInfo.mintAuthority,
-          destination: ourAssociatedTokens.address,
+          destination: associatedTokenAccount.address,
           tokenProgram: TOKEN_PROGRAM_ID,
         },
       });
