@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import twitterLogo from "./assets/twitter-logo.svg";
-import "./App.css";
-import { Program, Provider, web3, BN } from "@project-serum/anchor";
+import { BN, Program, Provider, web3 } from "@project-serum/anchor";
 import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import idl from "./idl.json";
+import idl from "configs/idl.json";
+import { TWITTER_HANDLE, TWITTER_LINK } from "constants/twitter";
+import twitterLogo from "assets/twitter-logo.svg";
+import "styles/App.css";
 
 const { clusterApiUrl, Connection, PublicKey } = web3;
 
@@ -22,10 +23,6 @@ const opts = {
 const tokenPublicKey = new PublicKey(
   "CuxuCrT6FCAc5SUoGDoMVuf7UCLwAvzUmseq4a9VBNqw"
 );
-
-// Change this up to be your Twitter if you want.
-const TWITTER_HANDLE = "Ksuphawit";
-const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
 const App = () => {
   const [walletAddress, setWalletAddress] = useState(null);
