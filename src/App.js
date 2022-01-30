@@ -156,7 +156,7 @@ const App = () => {
     <div className="App">
       <div className={walletAddress ? "authed-container" : "container"}>
         <div className="header-container">
-          <p className="header">💰 Min Rich Portal</p>
+          <p className="header">💰💰 Rich Portal</p>
           <p className="sub-text">become rich with us 🤑</p>
           {!walletAddress && renderNotConnectedContainer()}
           {walletAddress && renderInputAmount()}
