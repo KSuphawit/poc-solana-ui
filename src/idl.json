@@ -1,0 +1,40 @@
+{
+  "version": "0.1.0",
+  "name": "poc_solana",
+  "instructions": [
+    {
+      "name": "mintToken",
+      "accounts": [
+        {
+          "name": "token",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "destination",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "bumpSeed",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "address": "2pRe5i7Py9mxuQGm9xuh6BuD4SN9K1adwYr5qzAmVSU2"
+  }
+}
