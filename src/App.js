@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BN, web3 } from "@project-serum/anchor";
 import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
@@ -54,7 +54,9 @@ const App = (props) => {
     setWalletAddress(response.publicKey.toString());
   };
 
-  const onSubmit = async () => {
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
     if (inputValue.length <= 0) {
       alert("Please enter your amount.");
       return;
@@ -109,12 +111,7 @@ const App = (props) => {
 
   const renderInputAmount = () => (
     <div className="connected-container">
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          onSubmit();
-        }}
-      >
+      <form onSubmit={onSubmit}>
         <input
           type="text"
           placeholder="Enter token amount!"
