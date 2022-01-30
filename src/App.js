@@ -16,11 +16,10 @@ import {
   PROGRAM_ID,
 } from "utils/utils";
 
-const { PublicKey } = web3;
-
 const App = (props) => {
   const [walletAddress, setWalletAddress] = useState(null);
   const [inputValue, setInputValue] = useState("");
+  const { PublicKey } = web3;
   const cluster = props.cluster;
   const connection = getConnection(cluster);
 
@@ -55,10 +54,6 @@ const App = (props) => {
     setWalletAddress(response.publicKey.toString());
   };
 
-  const onInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
-
   const onSubmit = async () => {
     if (inputValue.length <= 0) {
       alert("Please enter your amount.");
@@ -67,6 +62,10 @@ const App = (props) => {
 
     setInputValue("");
 
+    await callRpcMintToken();
+  };
+
+  const callRpcMintToken = async () => {
     try {
       const provider = getProvider(cluster);
       const program = getProgram(cluster);
@@ -120,7 +119,9 @@ const App = (props) => {
           type="text"
           placeholder="Enter token amount!"
           value={inputValue}
-          onChange={onInputChange}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+          }}
         />
         <button type="submit" className="cta-button submit-gif-button">
           Submit
