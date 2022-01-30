@@ -28,6 +28,10 @@
       ],
       "args": [
         {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
           "name": "bumpSeed",
           "type": "u8"
         }

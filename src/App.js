@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import twitterLogo from "./assets/twitter-logo.svg";
 import "./App.css";
-import { Program, Provider, web3 } from "@project-serum/anchor";
+import { Program, Provider, web3, BN } from "@project-serum/anchor";
 import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import idl from "./idl.json";
 
-// SystemProgram is a reference to the Solana runtime!
 const { clusterApiUrl, Connection, PublicKey } = web3;
 
 // Get our program's id from the IDL file.
@@ -33,10 +32,6 @@ const App = () => {
   const [inputValue, setInputValue] = useState("");
   const connection = new Connection(network, opts.preflightCommitment);
 
-  /*
-   * When our component first mounts, let's check to see if we have a connected
-   * Phantom Wallet
-   */
   useEffect(() => {
     const onLoad = async () => {
       await checkIfWalletIsConnected();
@@ -45,10 +40,6 @@ const App = () => {
     return () => window.removeEventListener("load", onLoad);
   }, []);
 
-  /*
-   * This function holds the logic for deciding if a Phantom Wallet is
-   * connected or not
-   */
   const checkIfWalletIsConnected = async () => {
     try {
       const { solana } = window;
@@ -105,7 +96,7 @@ const App = () => {
         mintInfo.mintAuthority
       );
 
-      const result = await program.rpc.mintToken(bumpSeed, {
+      await program.rpc.mintToken(new BN(+inputValue), bumpSeed, {
         accounts: {
           token: token.publicKey,
           tokenAuthority: mintInfo.mintAuthority,
@@ -113,8 +104,6 @@ const App = () => {
           tokenProgram: TOKEN_PROGRAM_ID,
         },
       });
-
-      console.log("Result ==> ", result);
     } catch (error) {
       console.log("Error sending :", error);
     }
