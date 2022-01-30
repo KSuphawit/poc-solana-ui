@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { BN, Program, Provider, web3 } from "@project-serum/anchor";
 import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import idl from "configs/idl.json";
-import { TWITTER_HANDLE, TWITTER_LINK } from "constants/twitter";
+import {
+  PHANTOM_WALLET_URL,
+  TWITTER_HANDLE,
+  TWITTER_LINK,
+} from "constants/link";
 import twitterLogo from "assets/twitter-logo.svg";
 import "styles/App.css";
 
@@ -31,21 +35,20 @@ const App = () => {
 
   useEffect(() => {
     const onLoad = async () => {
-      await checkIfWalletIsConnected();
+      await isPhantomConnected();
     };
     window.addEventListener("load", onLoad);
     return () => window.removeEventListener("load", onLoad);
   }, []);
 
-  const checkIfWalletIsConnected = async () => {
+  const isPhantomConnected = async () => {
     try {
       const { solana } = window;
-      if (solana && solana.isPhantom) {
-        const response = await solana.connect({ onlyIfTrusted: true });
-        setWalletAddress(response.publicKey.toString());
-      } else {
-        alert("Solana object not found! Get a Phantom Wallet 👻");
-      }
+
+      if (!solana || !solana.isPhantom) return;
+
+      const response = await solana.connect({ onlyIfTrusted: true });
+      setWalletAddress(response.publicKey.toString());
     } catch (error) {
       console.error(error);
     }
@@ -54,11 +57,11 @@ const App = () => {
   const connectWallet = async () => {
     const { solana } = window;
 
-    if (solana) {
-      const response = await solana.connect();
-      console.log("Connected with Public Key:", response.publicKey.toString());
-      setWalletAddress(response.publicKey.toString());
-    }
+    if (!solana) window.open(PHANTOM_WALLET_URL);
+
+    const response = await solana.connect();
+
+    setWalletAddress(response.publicKey.toString());
   };
 
   const onInputChange = (e) => {
@@ -112,7 +115,7 @@ const App = () => {
         className="cta-button connect-wallet-button"
         onClick={connectWallet}
       >
-        Connect to Wallet
+        Connect Phantom Wallet
       </button>
     );
   };
