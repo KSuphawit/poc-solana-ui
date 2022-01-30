@@ -6,7 +6,7 @@ import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import idl from "./idl.json";
 
 // SystemProgram is a reference to the Solana runtime!
-const { SystemProgram, clusterApiUrl, Connection, PublicKey } = web3;
+const { clusterApiUrl, Connection, PublicKey } = web3;
 
 // Get our program's id from the IDL file.
 const programID = new PublicKey(idl.metadata.address);
