@@ -1,4 +1,4 @@
-# buildspace Solana Rich Portal Project
+# POC-SOLANA Project
 
 ### **Welcome 👋**
 To get started with this course, clone this repo and follow these commands:
