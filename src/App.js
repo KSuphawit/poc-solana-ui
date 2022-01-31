@@ -1,11 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BN, web3 } from "@project-serum/anchor";
 import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import {
-  PHANTOM_WALLET_URL,
-  TWITTER_HANDLE,
-  TWITTER_LINK,
-} from "constants/link";
+import { TWITTER_HANDLE, TWITTER_LINK } from "constants/link";
 import twitterLogo from "assets/twitter-logo.svg";
 import "styles/App.css";
 import { TokenAddress } from "constants/TokenAddress";
@@ -14,7 +10,8 @@ import {
   getProgram,
   getProvider,
   PROGRAM_ID,
-} from "utils/utils";
+} from "shared/utils/utils";
+import ConnectWallet from "shared/components/ConnectWallet/ConnectWallet";
 
 const App = (props) => {
   const [walletAddress, setWalletAddress] = useState(null);
@@ -22,37 +19,6 @@ const App = (props) => {
   const { PublicKey } = web3;
   const cluster = props.cluster;
   const connection = getConnection(cluster);
-
-  useEffect(() => {
-    const onLoad = async () => {
-      await isPhantomConnected();
-    };
-    window.addEventListener("load", onLoad);
-    return () => window.removeEventListener("load", onLoad);
-  }, []);
-
-  const isPhantomConnected = async () => {
-    try {
-      const { solana } = window;
-
-      if (!solana || !solana.isPhantom) return;
-
-      const response = await solana.connect({ onlyIfTrusted: true });
-      setWalletAddress(response.publicKey.toString());
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const connectWallet = async () => {
-    const { solana } = window;
-
-    if (!solana) window.open(PHANTOM_WALLET_URL);
-
-    const response = await solana.connect();
-
-    setWalletAddress(response.publicKey.toString());
-  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -98,17 +64,6 @@ const App = (props) => {
     }
   };
 
-  const renderNotConnectedContainer = () => {
-    return (
-      <button
-        className="cta-button connect-wallet-button"
-        onClick={connectWallet}
-      >
-        Connect Phantom Wallet
-      </button>
-    );
-  };
-
   const renderInputAmount = () => (
     <div className="connected-container">
       <form onSubmit={onSubmit}>
@@ -133,7 +88,9 @@ const App = (props) => {
         <div className="header-container">
           <p className="header">💰💰 Rich Portal</p>
           <p className="sub-text">become rich with us 🤑</p>
-          {!walletAddress && renderNotConnectedContainer()}
+          {!walletAddress && (
+            <ConnectWallet setWalletAddress={setWalletAddress} />
+          )}
           {walletAddress && renderInputAmount()}
         </div>
         <div className="footer-container">
