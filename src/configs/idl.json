@@ -13,7 +13,7 @@
         {
           "name": "tokenAuthority",
           "isMut": false,
-          "isSigner": false
+          "isSigner": true
         },
         {
           "name": "destination",

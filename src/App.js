@@ -49,9 +49,11 @@ const App = (props) => {
       const mintInfo = await token.getMintInfo();
 
       const associatedTokenAccount =
-        await token.getOrCreateAssociatedAccountInfo(mintInfo.mintAuthority);
+        await token.getOrCreateAssociatedAccountInfo(provider.wallet.publicKey);
 
-      await program.rpc.mintToken(new BN(+inputValue), bumpSeed, {
+      const amount = +inputValue * Math.pow(10, mintInfo.decimals);
+
+      await program.rpc.mintToken(new BN(amount), bumpSeed, {
         accounts: {
           token: token.publicKey,
           tokenAuthority: mintInfo.mintAuthority,
