@@ -3,112 +3,25 @@
   "name": "poc_solana",
   "instructions": [
     {
-      "name": "initMint",
-      "accounts": [
-        {
-          "name": "tokenMint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "payer",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "tokenMintBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "initUserAssociatedTokenAcc",
-      "accounts": [
-        {
-          "name": "tokenMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userAssocTokenAcct",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "payer",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "mintToken",
       "accounts": [
         {
-          "name": "tokenMint",
+          "name": "token",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "userAssocTokenAcct",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "payer",
+          "name": "tokenAuthority",
           "isMut": false,
           "isSigner": true
         },
         {
+          "name": "destination",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
           "isMut": false,
           "isSigner": false
         }
@@ -119,7 +32,7 @@
           "type": "u64"
         },
         {
-          "name": "tokenMintBump",
+          "name": "bumpSeed",
           "type": "u8"
         }
       ]
