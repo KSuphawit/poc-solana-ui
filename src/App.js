@@ -142,7 +142,7 @@ const App = (props) => {
       </form>
       <form onSubmit={callRpcInitializeMint}>
         <button type="submit" className="cta-button submit-gif-button">
-          Initialize DRT Mint
+          Initialize Token
         </button>
       </form>
     </div>
