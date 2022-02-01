@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { BN, web3 } from "@project-serum/anchor";
-import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import {
+  Token,
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 import { TWITTER_HANDLE, TWITTER_LINK } from "constants/link";
 import twitterLogo from "assets/twitter-logo.svg";
 import "styles/App.css";
@@ -16,7 +20,7 @@ import ConnectWallet from "shared/components/ConnectWallet/ConnectWallet";
 const App = (props) => {
   const [walletAddress, setWalletAddress] = useState(null);
   const [inputValue, setInputValue] = useState("");
-  const { PublicKey } = web3;
+  const { PublicKey, SYSVAR_RENT_PUBKEY, SystemProgram } = web3;
   const cluster = props.cluster;
   const connection = getConnection(cluster);
 
@@ -33,36 +37,91 @@ const App = (props) => {
     await callRpcMintToken();
   };
 
+  const callRpcInitializeMint = async (e) => {
+    e.preventDefault();
+    try {
+      const provider = getProvider(cluster);
+      const program = getProgram(cluster);
+      const [token, tokenMintBump] = await PublicKey.findProgramAddress(
+        [new TextEncoder().encode("token")],
+        PROGRAM_ID
+      );
+
+      console.log("callRpcInitializeMint.token : ", token.toString());
+
+      const result = await program.rpc.initMint(tokenMintBump, {
+        accounts: {
+          tokenMint: token,
+          payer: provider.wallet.publicKey,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          rent: SYSVAR_RENT_PUBKEY,
+          systemProgram: SystemProgram.programId,
+        },
+      });
+
+      console.log("Result callRpcInitializeMint : ", result);
+    } catch (error) {
+      console.log("Error callRpcInitializeMint :", error);
+    }
+  };
+
   const callRpcMintToken = async () => {
     try {
       const provider = getProvider(cluster);
       const program = getProgram(cluster);
-      const [_, bumpSeed] = await PublicKey.findProgramAddress([], PROGRAM_ID);
+      const [token, tokenMintBump] = await PublicKey.findProgramAddress(
+        [new TextEncoder().encode("token")],
+        PROGRAM_ID
+      );
 
-      const token = new Token(
-        connection,
-        TokenAddress.DRT,
+      console.log("callRpcMintToken.token : ", token.toString());
+
+      const userAssocTokenAcct = await Token.getAssociatedTokenAddress(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
         TOKEN_PROGRAM_ID,
+        token,
         provider.wallet.publicKey
       );
 
-      const mintInfo = await token.getMintInfo();
+      console.log(
+        ">>>>>>>>>>>>>>>>>>>> userAssocTokenAcct ",
+        userAssocTokenAcct.toString()
+      );
 
-      const associatedTokenAccount =
-        await token.getOrCreateAssociatedAccountInfo(provider.wallet.publicKey);
-
-      const amount = +inputValue * Math.pow(10, mintInfo.decimals);
-
-      await program.rpc.mintToken(new BN(amount), bumpSeed, {
+      const initAssAccResult = await program.rpc.initUserAssociatedTokenAcc({
         accounts: {
-          token: token.publicKey,
-          tokenAuthority: mintInfo.mintAuthority,
-          destination: associatedTokenAccount.address,
+          tokenMint: token,
+          userAssocTokenAcct: userAssocTokenAcct,
+          payer: provider.wallet.publicKey,
           tokenProgram: TOKEN_PROGRAM_ID,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+          rent: SYSVAR_RENT_PUBKEY,
+          systemProgram: SystemProgram.programId,
         },
       });
+
+      console.log("Result initUserAssociatedTokenAcc", initAssAccResult);
+
+      const amount = +inputValue * Math.pow(10, 9);
+
+      const mintTokenResult = await program.rpc.mintToken(
+        new BN(amount),
+        tokenMintBump,
+        {
+          accounts: {
+            tokenMint: token,
+            userAssocTokenAcct: userAssocTokenAcct,
+            payer: provider.wallet.publicKey,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            rent: SYSVAR_RENT_PUBKEY,
+            systemProgram: SystemProgram.programId,
+          },
+        }
+      );
+
+      console.log("Result mintTokenResult", mintTokenResult);
     } catch (error) {
-      console.log("Error sending :", error);
+      console.log("Error callRpcMintToken :", error);
     }
   };
 
@@ -79,6 +138,11 @@ const App = (props) => {
         />
         <button type="submit" className="cta-button submit-gif-button">
           Submit
+        </button>
+      </form>
+      <form onSubmit={callRpcInitializeMint}>
+        <button type="submit" className="cta-button submit-gif-button">
+          Initialize DRT Mint
         </button>
       </form>
     </div>
