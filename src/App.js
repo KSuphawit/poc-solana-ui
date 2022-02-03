@@ -131,18 +131,13 @@ const App = (props) => {
         PROGRAM_ID
       );
 
-      token = new PublicKey("5AVGRVoQqaimMSr2NmkGRz7mQre4VqK7cLzeQ16zeWiJ");
+      token = new PublicKey("CuxuCrT6FCAc5SUoGDoMVuf7UCLwAvzUmseq4a9VBNqw");
 
       const programAssocTokenAcct = await Token.getAssociatedTokenAddress(
         ASSOCIATED_TOKEN_PROGRAM_ID,
         TOKEN_PROGRAM_ID,
         token,
         PROGRAM_ID
-      );
-
-      console.log(
-        ">>>>>>>>>>>>>>>>>>>>>>>>> programAssocTokenAcct ",
-        programAssocTokenAcct.toString()
       );
 
       const userAssocTokenAcct = await Token.getAssociatedTokenAddress(
@@ -152,25 +147,7 @@ const App = (props) => {
         provider.wallet.publicKey
       );
 
-      console.log(
-        ">>>>>>>>>>>>>>>>>>>>>>>>> userAssocTokenAcct ",
-        userAssocTokenAcct.toString()
-      );
-
       const amount = +inputValue * Math.pow(10, 9);
-
-      const initAssAccResult = await program.rpc.initProgramAssociatedTokenAcc({
-        accounts: {
-          tokenMint: token,
-          programAssocTokenAcct: programAssocTokenAcct,
-          program: PROGRAM_ID,
-          payer: provider.wallet.publicKey,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-          rent: SYSVAR_RENT_PUBKEY,
-          systemProgram: SystemProgram.programId,
-        },
-      });
 
       const depositTokenResult = await program.rpc.depositToken(
         new BN(amount),
@@ -179,8 +156,12 @@ const App = (props) => {
             tokenMint: token,
             programAssocTokenAcct: programAssocTokenAcct,
             fromAssocTokenAct: userAssocTokenAcct,
+            program: PROGRAM_ID,
             user: provider.wallet.publicKey,
             tokenProgram: TOKEN_PROGRAM_ID,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+            rent: SYSVAR_RENT_PUBKEY,
+            systemProgram: SystemProgram.programId,
           },
         }
       );
