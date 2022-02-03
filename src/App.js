@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { BN, web3 } from "@project-serum/anchor";
 import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
   Token,
   TOKEN_PROGRAM_ID,
-  ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { TWITTER_HANDLE, TWITTER_LINK } from "constants/link";
 import twitterLogo from "assets/twitter-logo.svg";
 import "styles/App.css";
-import { TokenAddress } from "constants/TokenAddress";
 import {
   getConnection,
   getProgram,
@@ -126,12 +125,9 @@ const App = (props) => {
     try {
       const provider = getProvider(cluster);
       const program = getProgram(cluster);
-      let [token, tokenMintBump] = await PublicKey.findProgramAddress(
-        [new TextEncoder().encode("token")],
-        PROGRAM_ID
+      const token = new PublicKey(
+        "CuxuCrT6FCAc5SUoGDoMVuf7UCLwAvzUmseq4a9VBNqw"
       );
-
-      token = new PublicKey("CuxuCrT6FCAc5SUoGDoMVuf7UCLwAvzUmseq4a9VBNqw");
 
       const programAssocTokenAcct = await Token.getAssociatedTokenAddress(
         ASSOCIATED_TOKEN_PROGRAM_ID,
