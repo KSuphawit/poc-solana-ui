@@ -80,6 +80,52 @@
       "args": []
     },
     {
+      "name": "initProgramAssociatedTokenAcc",
+      "accounts": [
+        {
+          "name": "tokenMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "programAssocTokenAcct",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "program",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "mintToken",
       "accounts": [
         {
@@ -121,6 +167,42 @@
         {
           "name": "tokenMintBump",
           "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "depositToken",
+      "accounts": [
+        {
+          "name": "tokenMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "programAssocTokenAcct",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "fromAssocTokenAct",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
         }
       ]
     }
