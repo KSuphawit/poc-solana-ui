@@ -21,7 +21,6 @@ const App = (props) => {
   const [inputValue, setInputValue] = useState("");
   const { PublicKey, SYSVAR_RENT_PUBKEY, SystemProgram } = web3;
   const cluster = props.cluster;
-  const connection = getConnection(cluster);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -82,7 +81,9 @@ const App = (props) => {
         provider.wallet.publicKey
       );
 
-      const initAssAccResult = await program.rpc.initUserAssociatedTokenAcc({
+      const amount = +inputValue * Math.pow(10, 9);
+
+      const mintTokenResult = await program.rpc.mintToken(new BN(amount), {
         accounts: {
           tokenMint: token,
           userAssocTokenAcct: userAssocTokenAcct,
@@ -93,25 +94,6 @@ const App = (props) => {
           systemProgram: SystemProgram.programId,
         },
       });
-
-      console.log("Result initUserAssociatedTokenAcc", initAssAccResult);
-
-      const amount = +inputValue * Math.pow(10, 9);
-
-      const mintTokenResult = await program.rpc.mintToken(
-        new BN(amount),
-        tokenMintBump,
-        {
-          accounts: {
-            tokenMint: token,
-            userAssocTokenAcct: userAssocTokenAcct,
-            payer: provider.wallet.publicKey,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            rent: SYSVAR_RENT_PUBKEY,
-            systemProgram: SystemProgram.programId,
-          },
-        }
-      );
 
       console.log("Result mintTokenResult", mintTokenResult);
     } catch (error) {
@@ -125,23 +107,37 @@ const App = (props) => {
     try {
       const provider = getProvider(cluster);
       const program = getProgram(cluster);
-      const token = new PublicKey(
+      const depositToken = new PublicKey(
         "CuxuCrT6FCAc5SUoGDoMVuf7UCLwAvzUmseq4a9VBNqw"
       );
-
-      const programAssocTokenAcct = await Token.getAssociatedTokenAddress(
-        ASSOCIATED_TOKEN_PROGRAM_ID,
-        TOKEN_PROGRAM_ID,
-        token,
+      const [returnToken, returnTokenBump] = await PublicKey.findProgramAddress(
+        [new TextEncoder().encode("token")],
         PROGRAM_ID
       );
 
-      const userAssocTokenAcct = await Token.getAssociatedTokenAddress(
-        ASSOCIATED_TOKEN_PROGRAM_ID,
-        TOKEN_PROGRAM_ID,
-        token,
-        provider.wallet.publicKey
-      );
+      const programDepositTokenAssocTokenAcct =
+        await Token.getAssociatedTokenAddress(
+          ASSOCIATED_TOKEN_PROGRAM_ID,
+          TOKEN_PROGRAM_ID,
+          depositToken,
+          PROGRAM_ID
+        );
+
+      const userDepositTokenAssocTokenAcct =
+        await Token.getAssociatedTokenAddress(
+          ASSOCIATED_TOKEN_PROGRAM_ID,
+          TOKEN_PROGRAM_ID,
+          depositToken,
+          provider.wallet.publicKey
+        );
+
+      const userReturnTokenAssocTokenAcct =
+        await Token.getAssociatedTokenAddress(
+          ASSOCIATED_TOKEN_PROGRAM_ID,
+          TOKEN_PROGRAM_ID,
+          returnToken,
+          provider.wallet.publicKey
+        );
 
       const amount = +inputValue * Math.pow(10, 9);
 
@@ -149,11 +145,14 @@ const App = (props) => {
         new BN(amount),
         {
           accounts: {
-            tokenMint: token,
-            programAssocTokenAcct: programAssocTokenAcct,
-            fromAssocTokenAct: userAssocTokenAcct,
-            program: PROGRAM_ID,
+            depositToken: depositToken,
+            // returnToken: returnToken,
+            programDepositTokenAssocTokenAcct:
+              programDepositTokenAssocTokenAcct,
+            userDepositTokenAssocTokenAcct: userDepositTokenAssocTokenAcct,
+            // userReturnTokenAssocTokenAcct: userReturnTokenAssocTokenAcct,
             user: provider.wallet.publicKey,
+            program: PROGRAM_ID,
             tokenProgram: TOKEN_PROGRAM_ID,
             associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
             rent: SYSVAR_RENT_PUBKEY,
@@ -163,6 +162,8 @@ const App = (props) => {
       );
 
       console.log("Result callRpcDepositToken", depositTokenResult);
+
+      await callRpcMintToken();
     } catch (error) {
       console.log("Error callRpcDepositToken :", error);
     }
@@ -170,7 +171,7 @@ const App = (props) => {
 
   const renderInputAmount = () => (
     <div className="connected-container">
-      <form onSubmit={onSubmit}>
+      <form onSubmit={callRpcDepositToken}>
         <input
           type="text"
           placeholder="Enter token amount!"
@@ -180,7 +181,7 @@ const App = (props) => {
           }}
         />
         <button type="submit" className="cta-button submit-gif-button">
-          Submit
+          Deposit Token
         </button>
       </form>
       {/*<form onSubmit={callRpcInitializeMint}>*/}
@@ -188,11 +189,6 @@ const App = (props) => {
       {/*    Initialize Token*/}
       {/*  </button>*/}
       {/*</form>*/}
-      <form onSubmit={callRpcDepositToken}>
-        <button type="submit" className="cta-button submit-gif-button">
-          Deposit Token
-        </button>
-      </form>
     </div>
   );
 
