@@ -93,6 +93,11 @@
           "isSigner": false
         },
         {
+          "name": "returnToken",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "programDepositTokenAssocTokenAcct",
           "isMut": true,
           "isSigner": false
@@ -103,8 +108,13 @@
           "isSigner": false
         },
         {
+          "name": "userReturnTokenAssocTokenAcct",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "user",
-          "isMut": false,
+          "isMut": true,
           "isSigner": true
         },
         {
@@ -116,19 +126,55 @@
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
-        },
+        }
+      ],
+      "args": [
         {
-          "name": "associatedTokenProgram",
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdrawToken",
+      "accounts": [
+        {
+          "name": "withdrawToken",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "rent",
-          "isMut": false,
+          "name": "burningToken",
+          "isMut": true,
           "isSigner": false
         },
         {
-          "name": "systemProgram",
+          "name": "programWithdrawTokenAssocTokenAcct",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userWithdrawTokenAssocTokenAcct",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "burningSource",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "program",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         }
