@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BN, web3 } from "@project-serum/anchor";
+import { BN, web3, utils } from "@project-serum/anchor";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   Token,
@@ -15,78 +15,24 @@ import {
   PROGRAM_ID,
 } from "shared/utils/utils";
 import ConnectWallet from "shared/components/ConnectWallet/ConnectWallet";
+import { doc as anchor } from "prettier";
+import { Dropdown } from "react-bootstrap";
 
 const App = (props) => {
   const [walletAddress, setWalletAddress] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const { PublicKey, SYSVAR_RENT_PUBKEY, SystemProgram } = web3;
   const cluster = props.cluster;
-
-  const callRpcInitializeMint = async (e) => {
-    e.preventDefault();
-    try {
-      const provider = getProvider(cluster);
-      const program = getProgram(cluster);
-      let [token, tokenMintBump] = await PublicKey.findProgramAddress(
-        [new TextEncoder().encode("token")],
-        PROGRAM_ID
-      );
-
-      console.log("callRpcInitializeMint.token : ", token.toString());
-
-      const result = await program.rpc.initMint(tokenMintBump, {
-        accounts: {
-          tokenMint: token,
-          payer: provider.wallet.publicKey,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          rent: SYSVAR_RENT_PUBKEY,
-          systemProgram: SystemProgram.programId,
-        },
-      });
-
-      console.log("Result callRpcInitializeMint : ", result);
-    } catch (error) {
-      console.log("Error callRpcInitializeMint :", error);
-    }
-  };
-
-  const callRpcMintToken = async () => {
-    try {
-      const provider = getProvider(cluster);
-      const program = getProgram(cluster);
-      const [token, tokenMintBump] = await PublicKey.findProgramAddress(
-        [new TextEncoder().encode("token")],
-        PROGRAM_ID
-      );
-
-      console.log("callRpcMintToken.token : ", token.toString());
-
-      const userAssocTokenAcct = await Token.getAssociatedTokenAddress(
-        ASSOCIATED_TOKEN_PROGRAM_ID,
-        TOKEN_PROGRAM_ID,
-        token,
-        provider.wallet.publicKey
-      );
-
-      const amount = +inputValue * Math.pow(10, 9);
-
-      const mintTokenResult = await program.rpc.mintToken(new BN(amount), {
-        accounts: {
-          tokenMint: token,
-          userAssocTokenAcct: userAssocTokenAcct,
-          payer: provider.wallet.publicKey,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-          rent: SYSVAR_RENT_PUBKEY,
-          systemProgram: SystemProgram.programId,
-        },
-      });
-
-      console.log("Result mintTokenResult", mintTokenResult);
-    } catch (error) {
-      console.log("Error callRpcMintToken :", error);
-    }
-  };
+  const dropdownMenus = [
+    {
+      menu: "Deposit Token",
+      onClick: (e) => callRpcDepositToken(e),
+    },
+    {
+      menu: "Withdraw Token",
+      onClick: (e) => callRpcWithdrawToken(e),
+    },
+  ];
 
   const callRpcDepositToken = async (e) => {
     e.preventDefault();
@@ -101,14 +47,27 @@ const App = (props) => {
         [new TextEncoder().encode("token")],
         PROGRAM_ID
       );
-
-      const programDepositTokenAssocTokenAcct =
-        await Token.getAssociatedTokenAddress(
-          ASSOCIATED_TOKEN_PROGRAM_ID,
-          TOKEN_PROGRAM_ID,
-          depositToken,
+      const [programAuthority, programAuthorityBump] =
+        await PublicKey.findProgramAddress(
+          [Buffer.from(utils.bytes.utf8.encode("program_authority"))],
           PROGRAM_ID
         );
+
+      console.log(
+        ">>>>>>>>>>>>>>>>>>>>>>> programAuthority : ",
+        programAuthority.toString()
+      );
+
+      const programDepositTokenAssocTokenAcct = (
+        await PublicKey.findProgramAddress(
+          [
+            programAuthority.toBuffer(),
+            TOKEN_PROGRAM_ID.toBuffer(),
+            depositToken.toBuffer(),
+          ],
+          ASSOCIATED_TOKEN_PROGRAM_ID
+        )
+      )[0];
 
       const userDepositTokenAssocTokenAcct =
         await Token.getAssociatedTokenAddress(
@@ -139,7 +98,7 @@ const App = (props) => {
             userDepositTokenAssocTokenAcct: userDepositTokenAssocTokenAcct,
             userReturnTokenAssocTokenAcct: userReturnTokenAssocTokenAcct,
             user: provider.wallet.publicKey,
-            program: PROGRAM_ID,
+            programAuthority: programAuthority,
             tokenProgram: TOKEN_PROGRAM_ID,
             // associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
             // rent: SYSVAR_RENT_PUBKEY,
@@ -165,18 +124,26 @@ const App = (props) => {
       const withdrawToken = new PublicKey(
         "CuxuCrT6FCAc5SUoGDoMVuf7UCLwAvzUmseq4a9VBNqw"
       );
+      const [programAuthority, programAuthorityBump] =
+        await PublicKey.findProgramAddress(
+          [Buffer.from(utils.bytes.utf8.encode("program_authority"))],
+          PROGRAM_ID
+        );
       const [burningToken, _] = await PublicKey.findProgramAddress(
         [new TextEncoder().encode("token")],
         PROGRAM_ID
       );
 
-      const programWithdrawTokenAssocTokenAcct =
-        await Token.getAssociatedTokenAddress(
-          ASSOCIATED_TOKEN_PROGRAM_ID,
-          TOKEN_PROGRAM_ID,
-          withdrawToken,
-          PROGRAM_ID
-        );
+      const programWithdrawTokenAssocTokenAcct = (
+        await PublicKey.findProgramAddress(
+          [
+            programAuthority.toBuffer(),
+            TOKEN_PROGRAM_ID.toBuffer(),
+            withdrawToken.toBuffer(),
+          ],
+          ASSOCIATED_TOKEN_PROGRAM_ID
+        )
+      )[0];
 
       console.log(
         ">>>>>>>>>>>>>>>>>>>>>>>>>>> programWithdrawTokenAssocTokenAcct ",
@@ -216,7 +183,7 @@ const App = (props) => {
             userWithdrawTokenAssocTokenAcct: userWithdrawTokenAssocTokenAcct,
             burningSource: burningSource,
             user: provider.wallet.publicKey,
-            program: PROGRAM_ID,
+            programAuthority: programAuthority,
             tokenProgram: TOKEN_PROGRAM_ID,
           },
         }
@@ -240,14 +207,14 @@ const App = (props) => {
           }}
         />
         <button type="submit" className="cta-button submit-gif-button">
-          Submit
+          Deposit Token
         </button>
       </form>
-      {/*<form onSubmit={callRpcInitializeMint}>*/}
-      {/*  <button type="submit" className="cta-button submit-gif-button">*/}
-      {/*    Initialize Token*/}
-      {/*  </button>*/}
-      {/*</form>*/}
+      <form onSubmit={callRpcWithdrawToken}>
+        <button type="submit" className="cta-button submit-gif-button">
+          Withdraw Token
+        </button>
+      </form>
     </div>
   );
 

@@ -118,7 +118,7 @@
           "isSigner": true
         },
         {
-          "name": "program",
+          "name": "programAuthority",
           "isMut": false,
           "isSigner": false
         },
@@ -169,9 +169,9 @@
           "isSigner": true
         },
         {
-          "name": "program",
+          "name": "programAuthority",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "tokenProgram",
