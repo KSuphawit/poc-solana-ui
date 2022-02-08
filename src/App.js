@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BN, web3, utils } from "@project-serum/anchor";
+import { BN, utils, web3 } from "@project-serum/anchor";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   Token,
@@ -8,31 +8,14 @@ import {
 import { TWITTER_HANDLE, TWITTER_LINK } from "constants/link";
 import twitterLogo from "assets/twitter-logo.svg";
 import "styles/App.css";
-import {
-  getConnection,
-  getProgram,
-  getProvider,
-  PROGRAM_ID,
-} from "shared/utils/utils";
+import { getProgram, getProvider, PROGRAM_ID } from "shared/utils/utils";
 import ConnectWallet from "shared/components/ConnectWallet/ConnectWallet";
-import { doc as anchor } from "prettier";
-import { Dropdown } from "react-bootstrap";
 
 const App = (props) => {
   const [walletAddress, setWalletAddress] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const { PublicKey, SYSVAR_RENT_PUBKEY, SystemProgram } = web3;
   const cluster = props.cluster;
-  const dropdownMenus = [
-    {
-      menu: "Deposit Token",
-      onClick: (e) => callRpcDepositToken(e),
-    },
-    {
-      menu: "Withdraw Token",
-      onClick: (e) => callRpcWithdrawToken(e),
-    },
-  ];
 
   const callRpcDepositToken = async (e) => {
     e.preventDefault();
