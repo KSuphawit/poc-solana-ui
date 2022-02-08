@@ -3,21 +3,123 @@
   "name": "poc_solana",
   "instructions": [
     {
-      "name": "mintToken",
+      "name": "initMint",
       "accounts": [
         {
-          "name": "token",
+          "name": "tokenMint",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenAuthority",
+          "name": "payer",
           "isMut": false,
           "isSigner": true
         },
         {
-          "name": "destination",
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "tokenMintBump",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "mintToken",
+      "accounts": [
+        {
+          "name": "tokenMint",
           "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userAssocTokenAcct",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "depositToken",
+      "accounts": [
+        {
+          "name": "depositToken",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "returnToken",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "programDepositTokenAssocTokenAcct",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userDepositTokenAssocTokenAcct",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userReturnTokenAssocTokenAcct",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "programAuthority",
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -30,10 +132,57 @@
         {
           "name": "amount",
           "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdrawToken",
+      "accounts": [
+        {
+          "name": "withdrawToken",
+          "isMut": false,
+          "isSigner": false
         },
         {
-          "name": "bumpSeed",
-          "type": "u8"
+          "name": "burningToken",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "programWithdrawTokenAssocTokenAcct",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userWithdrawTokenAssocTokenAcct",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "burningSource",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "programAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
         }
       ]
     }

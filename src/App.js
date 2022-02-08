@@ -1,74 +1,186 @@
 import { useState } from "react";
-import { BN, web3 } from "@project-serum/anchor";
-import { Token, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { BN, utils, web3 } from "@project-serum/anchor";
+import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  Token,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 import { TWITTER_HANDLE, TWITTER_LINK } from "constants/link";
 import twitterLogo from "assets/twitter-logo.svg";
 import "styles/App.css";
-import { TokenAddress } from "constants/TokenAddress";
-import {
-  getConnection,
-  getProgram,
-  getProvider,
-  PROGRAM_ID,
-} from "shared/utils/utils";
+import { getProgram, getProvider, PROGRAM_ID } from "shared/utils/utils";
 import ConnectWallet from "shared/components/ConnectWallet/ConnectWallet";
 
 const App = (props) => {
   const [walletAddress, setWalletAddress] = useState(null);
   const [inputValue, setInputValue] = useState("");
-  const { PublicKey } = web3;
+  const { PublicKey, SYSVAR_RENT_PUBKEY, SystemProgram } = web3;
   const cluster = props.cluster;
-  const connection = getConnection(cluster);
 
-  const onSubmit = async (e) => {
+  const callRpcDepositToken = async (e) => {
     e.preventDefault();
-
-    if (inputValue.length <= 0) {
-      alert("Please enter your amount.");
-      return;
-    }
-
     setInputValue("");
-
-    await callRpcMintToken();
-  };
-
-  const callRpcMintToken = async () => {
     try {
       const provider = getProvider(cluster);
       const program = getProgram(cluster);
-      const [_, bumpSeed] = await PublicKey.findProgramAddress([], PROGRAM_ID);
+      const depositToken = new PublicKey(
+        "CuxuCrT6FCAc5SUoGDoMVuf7UCLwAvzUmseq4a9VBNqw"
+      );
+      const [returnToken, returnTokenBump] = await PublicKey.findProgramAddress(
+        [new TextEncoder().encode("token")],
+        PROGRAM_ID
+      );
+      const [programAuthority, programAuthorityBump] =
+        await PublicKey.findProgramAddress(
+          [Buffer.from(utils.bytes.utf8.encode("program_authority"))],
+          PROGRAM_ID
+        );
 
-      const token = new Token(
-        connection,
-        TokenAddress.DRT,
+      console.log(
+        ">>>>>>>>>>>>>>>>>>>>>>> programAuthority : ",
+        programAuthority.toString()
+      );
+
+      const programDepositTokenAssocTokenAcct = (
+        await PublicKey.findProgramAddress(
+          [
+            programAuthority.toBuffer(),
+            TOKEN_PROGRAM_ID.toBuffer(),
+            depositToken.toBuffer(),
+          ],
+          ASSOCIATED_TOKEN_PROGRAM_ID
+        )
+      )[0];
+
+      const userDepositTokenAssocTokenAcct =
+        await Token.getAssociatedTokenAddress(
+          ASSOCIATED_TOKEN_PROGRAM_ID,
+          TOKEN_PROGRAM_ID,
+          depositToken,
+          provider.wallet.publicKey
+        );
+
+      const userReturnTokenAssocTokenAcct =
+        await Token.getAssociatedTokenAddress(
+          ASSOCIATED_TOKEN_PROGRAM_ID,
+          TOKEN_PROGRAM_ID,
+          returnToken,
+          provider.wallet.publicKey
+        );
+
+      const amount = +inputValue * Math.pow(10, 9);
+
+      const depositTokenResult = await program.rpc.depositToken(
+        new BN(amount),
+        {
+          accounts: {
+            depositToken: depositToken,
+            returnToken: returnToken,
+            programDepositTokenAssocTokenAcct:
+              programDepositTokenAssocTokenAcct,
+            userDepositTokenAssocTokenAcct: userDepositTokenAssocTokenAcct,
+            userReturnTokenAssocTokenAcct: userReturnTokenAssocTokenAcct,
+            user: provider.wallet.publicKey,
+            programAuthority: programAuthority,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            // associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+            // rent: SYSVAR_RENT_PUBKEY,
+            // systemProgram: SystemProgram.programId,
+          },
+        }
+      );
+
+      console.log("Result callRpcDepositToken", depositTokenResult);
+
+      // await callRpcMintToken();
+    } catch (error) {
+      console.log("Error callRpcDepositToken :", error);
+    }
+  };
+
+  const callRpcWithdrawToken = async (e) => {
+    e.preventDefault();
+    setInputValue("");
+    try {
+      const provider = getProvider(cluster);
+      const program = getProgram(cluster);
+      const withdrawToken = new PublicKey(
+        "CuxuCrT6FCAc5SUoGDoMVuf7UCLwAvzUmseq4a9VBNqw"
+      );
+      const [programAuthority, programAuthorityBump] =
+        await PublicKey.findProgramAddress(
+          [Buffer.from(utils.bytes.utf8.encode("program_authority"))],
+          PROGRAM_ID
+        );
+      const [burningToken, _] = await PublicKey.findProgramAddress(
+        [new TextEncoder().encode("token")],
+        PROGRAM_ID
+      );
+
+      const programWithdrawTokenAssocTokenAcct = (
+        await PublicKey.findProgramAddress(
+          [
+            programAuthority.toBuffer(),
+            TOKEN_PROGRAM_ID.toBuffer(),
+            withdrawToken.toBuffer(),
+          ],
+          ASSOCIATED_TOKEN_PROGRAM_ID
+        )
+      )[0];
+
+      console.log(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>> programWithdrawTokenAssocTokenAcct ",
+        programWithdrawTokenAssocTokenAcct.toString()
+      );
+
+      const userWithdrawTokenAssocTokenAcct =
+        await Token.getAssociatedTokenAddress(
+          ASSOCIATED_TOKEN_PROGRAM_ID,
+          TOKEN_PROGRAM_ID,
+          withdrawToken,
+          provider.wallet.publicKey
+        );
+
+      console.log(
+        ">>>>>>>>>>>>>>>>>>>> userWithdrawTokenAssocTokenAcct ",
+        userWithdrawTokenAssocTokenAcct.toString()
+      );
+
+      const burningSource = await Token.getAssociatedTokenAddress(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
         TOKEN_PROGRAM_ID,
+        burningToken,
         provider.wallet.publicKey
       );
 
-      const mintInfo = await token.getMintInfo();
+      const amount = +inputValue * Math.pow(10, 9);
 
-      const associatedTokenAccount =
-        await token.getOrCreateAssociatedAccountInfo(provider.wallet.publicKey);
+      const withdrawTokenResult = await program.rpc.withdrawToken(
+        new BN(amount),
+        {
+          accounts: {
+            withdrawToken: withdrawToken,
+            burningToken: burningToken,
+            programWithdrawTokenAssocTokenAcct:
+              programWithdrawTokenAssocTokenAcct,
+            userWithdrawTokenAssocTokenAcct: userWithdrawTokenAssocTokenAcct,
+            burningSource: burningSource,
+            user: provider.wallet.publicKey,
+            programAuthority: programAuthority,
+            tokenProgram: TOKEN_PROGRAM_ID,
+          },
+        }
+      );
 
-      const amount = +inputValue * Math.pow(10, mintInfo.decimals);
-
-      await program.rpc.mintToken(new BN(amount), bumpSeed, {
-        accounts: {
-          token: token.publicKey,
-          tokenAuthority: mintInfo.mintAuthority,
-          destination: associatedTokenAccount.address,
-          tokenProgram: TOKEN_PROGRAM_ID,
-        },
-      });
+      console.log("Result callRpcWithdrawToken", withdrawTokenResult);
     } catch (error) {
-      console.log("Error sending :", error);
+      console.log("Error callRpcWithdrawToken :", error);
     }
   };
 
   const renderInputAmount = () => (
     <div className="connected-container">
-      <form onSubmit={onSubmit}>
+      <form onSubmit={callRpcDepositToken}>
         <input
           type="text"
           placeholder="Enter token amount!"
@@ -78,7 +190,12 @@ const App = (props) => {
           }}
         />
         <button type="submit" className="cta-button submit-gif-button">
-          Submit
+          Deposit Token
+        </button>
+      </form>
+      <form onSubmit={callRpcWithdrawToken}>
+        <button type="submit" className="cta-button submit-gif-button">
+          Withdraw Token
         </button>
       </form>
     </div>
