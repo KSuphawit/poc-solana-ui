@@ -9,20 +9,17 @@ const App = (props) => {
     const [inputValue, setInputValue] = useState("");
     const [anchorClient, setAnchorClient] = useState(null);
 
-
     const setWallet = (publicKey) => {
         setAnchorClient(new AnchorClient(props.cluster))
         setWalletAddress(publicKey)
     }
 
-    const depositToken = async (e) => {
-        e.preventDefault();
+    const depositToken = async () => {
         setInputValue("");
         await anchorClient.depositToSolend(Token.USDC, +inputValue)
     }
 
-    const withdrawToken = async (e) => {
-        e.preventDefault();
+    const withdrawToken = async () => {
         setInputValue("");
         await anchorClient.withdrawFromSolend(Token.USDC, +inputValue)
     }
