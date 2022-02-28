@@ -30,24 +30,20 @@ const App = (props) => {
 
     const renderInputAmount = () => (
         <div className="connected-container">
-            <form onSubmit={depositToken}>
-                <input
-                    type="text"
-                    placeholder="Enter token amount!"
-                    value={inputValue}
-                    onChange={(e) => {
-                        setInputValue(e.target.value);
-                    }}
-                />
-                <button type="submit" className="cta-button submit-gif-button">
-                    Deposit Token
-                </button>
-            </form>
-            <form onSubmit={withdrawToken}>
-                <button type="submit" className="cta-button submit-gif-button">
-                    Withdraw Token
-                </button>
-            </form>
+            <input
+                type="text"
+                placeholder="Enter token amount!"
+                value={inputValue}
+                onChange={(e) => {
+                    setInputValue(e.target.value);
+                }}
+            />
+            <button type="submit" onClick={depositToken} className="cta-button submit-gif-button">
+                Deposit Token
+            </button>
+            <button type="submit" onClick={withdrawToken} className="cta-button submit-gif-button">
+                Withdraw Token
+            </button>
         </div>
     );
 
