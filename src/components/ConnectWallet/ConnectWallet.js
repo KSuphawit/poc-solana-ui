@@ -5,7 +5,7 @@ export const ConnectWallet = (props) => {
     useEffect(() => {
         window.addEventListener("load", onLoad);
         return () => window.removeEventListener("load", onLoad);
-    });
+    },[]);
 
     const onLoad = async () => {
         const publicKey = await WalletAdaptorPhantom.isPhantomConnected();

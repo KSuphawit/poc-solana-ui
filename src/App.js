@@ -25,7 +25,7 @@ const App = (props) => {
     }
 
 
-    const renderInputAmount = () => (
+    const renderConnected = () => (
         <div className="connected-container">
             <input
                 type="text"
@@ -53,7 +53,7 @@ const App = (props) => {
                     {!walletAddress && (
                         <ConnectWallet setWalletAddress={setWallet}/>
                     )}
-                    {walletAddress && renderInputAmount()}
+                    {walletAddress && renderConnected()}
                 </div>
             </div>
         </div>
