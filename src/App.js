@@ -47,8 +47,6 @@ const App = (props) => {
         <div className="App">
             <div className={walletAddress ? "authed-container" : "container"}>
                 <div className="header-container">
-                    <p className="header">LOTTO DEMO</p>
-                    <p className="sub-text">💲💲💲</p>
                     {!walletAddress && (
                         <ConnectWallet setWalletAddress={setWallet}/>
                     )}
