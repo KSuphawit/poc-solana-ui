@@ -27,7 +27,7 @@ export default class AnchorClient {
     }
 
     async getTotalDeposit() {
-        const [_, mainState] = await this.getMainStateAccount()
+        const [, mainState] = await this.getMainStateAccount()
         return mainState.totalDeposit
     }
 
@@ -84,7 +84,7 @@ export default class AnchorClient {
         return Token.getAssociatedTokenAddress(ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, mintPubKey, this.provider.wallet.publicKey)
     }
 
-    async deposit(amount) {
+    async getTransactionInvolvedData() {
         const [mainStatePDA] = await this.getMainStateAccount()
         const [metadataPDA, metadata] = await this.getMetadataAccount()
         const [lendingMarketAuthority] = await web3.PublicKey.findProgramAddress([metadata.lendingMarketAuthoritySeed.toBuffer()], metadata.lendingProgram)
@@ -92,81 +92,91 @@ export default class AnchorClient {
         const userTokenAccount = await this.getAssociatedTokenAddress(metadata.usdcMint)
         const reserve = await this.getReserve(metadata.reserve)
         const usdcMintInfo = await this.getMintInfo(metadata.usdcMint)
+
+        return {
+            mainStatePDA,
+            metadataPDA,
+            metadata,
+            lendingMarketAuthority,
+            userDepositPDA,
+            userTokenAccount,
+            reserve,
+            usdcMintInfo
+        }
+
+    }
+
+    async deposit(amount) {
+        const transactionInvolvedData = await this.getTransactionInvolvedData()
 
         const tx = await this.program.rpc.deposit(
             {
                 uiAmount: amount,
-                decimals: usdcMintInfo.decimals
+                decimals: transactionInvolvedData.usdcMintInfo.decimals
             },
             {
                 accounts: {
-                    userDeposit: userDepositPDA,
-                    mainState: mainStatePDA,
-                    metadata: metadataPDA,
-                    programAuthority: metadata.programAuthority,
-                    usdcMint: metadata.usdcMint,
-                    programUsdcTokenAccount: metadata.usdcTokenAccount,
-                    userUsdcTokenAccount: userTokenAccount,
-                    collateral: metadata.collateral,
-                    reserve: metadata.reserve,
-                    reserveLiquiditySupply: reserve.liquidity.supplyPubkey,
-                    reserveCollateralMint: reserve.collateral.mintPubkey,
-                    lendingMarket: reserve.lendingMarket,
-                    lendingMarketAuthority: lendingMarketAuthority,
-                    destinationDepositCollateral: reserve.collateral.supplyPubkey,
-                    obligation: metadata.obligation,
-                    reserveLiquidityPythOracle: reserve.liquidity.pythOracle,
-                    lendingProgram: metadata.lendingProgram,
-                    reserveLiquiditySwitchboardOracle: reserve.liquidity.switchboardOracle,
+                    userDeposit: transactionInvolvedData.userDepositPDA,
+                    mainState: transactionInvolvedData.mainStatePDA,
+                    metadata: transactionInvolvedData.metadataPDA,
+                    programAuthority: transactionInvolvedData.metadata.programAuthority,
+                    usdcMint: transactionInvolvedData.metadata.usdcMint,
+                    programUsdcTokenAccount: transactionInvolvedData.metadata.usdcTokenAccount,
+                    userUsdcTokenAccount: transactionInvolvedData.userTokenAccount,
+                    collateral: transactionInvolvedData.metadata.collateral,
+                    reserve: transactionInvolvedData.metadata.reserve,
+                    reserveLiquiditySupply: transactionInvolvedData.reserve.liquidity.supplyPubkey,
+                    reserveCollateralMint: transactionInvolvedData.reserve.collateral.mintPubkey,
+                    lendingMarket: transactionInvolvedData.reserve.lendingMarket,
+                    lendingMarketAuthority: transactionInvolvedData.lendingMarketAuthority,
+                    destinationDepositCollateral: transactionInvolvedData.reserve.collateral.supplyPubkey,
+                    obligation: transactionInvolvedData.metadata.obligation,
+                    reserveLiquidityPythOracle: transactionInvolvedData.reserve.liquidity.pythOracle,
+                    lendingProgram: transactionInvolvedData.metadata.lendingProgram,
+                    reserveLiquiditySwitchboardOracle: transactionInvolvedData.reserve.liquidity.switchboardOracle,
                     owner: this.provider.wallet.publicKey,
                     clock: web3.SYSVAR_CLOCK_PUBKEY,
                     tokenProgram: TOKEN_PROGRAM_ID,
                 },
             })
 
-        console.log(`Deposit transaction signature : ${tx} , program token account : ${metadata.usdcTokenAccount}`)
+        console.log(`Deposit transaction signature : ${tx} , program token account : ${transactionInvolvedData.metadata.usdcTokenAccount}`)
     }
 
     async withdraw(amount) {
-        const [mainStatePDA] = await this.getMainStateAccount()
-        const [metadataPDA, metadata] = await this.getMetadataAccount()
-        const [lendingMarketAuthority] = await web3.PublicKey.findProgramAddress([metadata.lendingMarketAuthoritySeed.toBuffer()], metadata.lendingProgram)
-        const [userDepositPDA] = await this.getUserDepositAccount(this.provider.wallet.publicKey)
-        const userTokenAccount = await this.getAssociatedTokenAddress(metadata.usdcMint)
-        const reserve = await this.getReserve(metadata.reserve)
-        const usdcMintInfo = await this.getMintInfo(metadata.usdcMint)
+        const transactionInvolvedData = await this.getTransactionInvolvedData()
 
         const tx = await this.program.rpc.withdraw(
             {
                 uiAmount: amount,
-                decimals: usdcMintInfo.decimals
+                decimals: transactionInvolvedData.usdcMintInfo.decimals
             },
             {
                 accounts: {
-                    userDeposit: userDepositPDA,
-                    mainState: mainStatePDA,
-                    metadata: metadataPDA,
-                    programAuthority: metadata.programAuthority,
-                    usdcMint: metadata.usdcMint,
-                    programUsdcTokenAccount: metadata.usdcTokenAccount,
-                    userUsdcTokenAccount: userTokenAccount,
-                    collateral: metadata.collateral,
-                    reserve: metadata.reserve,
-                    obligation: metadata.obligation,
-                    lendingMarket: reserve.lendingMarket,
-                    lendingMarketAuthority: lendingMarketAuthority,
-                    reserveCollateralMint: reserve.collateral.mintPubkey,
-                    reserveCollateralSupply: reserve.collateral.supplyPubkey,
-                    reserveLiquiditySupply: reserve.liquidity.supplyPubkey,
-                    reserveLiquidityPythOracle: reserve.liquidity.pythOracle,
-                    reserveLiquiditySwitchboardOracle: reserve.liquidity.switchboardOracle,
-                    lendingProgram: metadata.lendingProgram,
+                    userDeposit: transactionInvolvedData.userDepositPDA,
+                    mainState: transactionInvolvedData.mainStatePDA,
+                    metadata: transactionInvolvedData.metadataPDA,
+                    programAuthority: transactionInvolvedData.metadata.programAuthority,
+                    usdcMint: transactionInvolvedData.metadata.usdcMint,
+                    programUsdcTokenAccount: transactionInvolvedData.metadata.usdcTokenAccount,
+                    userUsdcTokenAccount: transactionInvolvedData.userTokenAccount,
+                    collateral: transactionInvolvedData.metadata.collateral,
+                    reserve: transactionInvolvedData.metadata.reserve,
+                    obligation: transactionInvolvedData.metadata.obligation,
+                    lendingMarket: transactionInvolvedData.reserve.lendingMarket,
+                    lendingMarketAuthority: transactionInvolvedData.lendingMarketAuthority,
+                    reserveCollateralMint: transactionInvolvedData.reserve.collateral.mintPubkey,
+                    reserveCollateralSupply: transactionInvolvedData.reserve.collateral.supplyPubkey,
+                    reserveLiquiditySupply: transactionInvolvedData.reserve.liquidity.supplyPubkey,
+                    reserveLiquidityPythOracle: transactionInvolvedData.reserve.liquidity.pythOracle,
+                    reserveLiquiditySwitchboardOracle: transactionInvolvedData.reserve.liquidity.switchboardOracle,
+                    lendingProgram: transactionInvolvedData.metadata.lendingProgram,
                     owner: this.provider.wallet.publicKey,
                     clock: web3.SYSVAR_CLOCK_PUBKEY,
                     tokenProgram: TOKEN_PROGRAM_ID,
                 },
             })
 
-        console.log(`Withdraw transaction signature : ${tx} , program token account : ${metadata.usdcTokenAccount}`)
+        console.log(`Withdraw transaction signature : ${tx} , program token account : ${transactionInvolvedData.metadata.usdcTokenAccount}`)
     }
 }
