@@ -28,7 +28,10 @@ export default class AnchorClient {
 
     async getTotalDeposit() {
         const [, mainState] = await this.getMainStateAccount()
-        return mainState.totalDeposit
+        const [, metadata] = await this.getMetadataAccount()
+        const mintInfo = await this.getMintInfo(metadata.usdcMint)
+
+        return mainState.totalDeposit / Math.pow(10, mintInfo.decimals)
     }
 
     async getMetadataAccount() {
