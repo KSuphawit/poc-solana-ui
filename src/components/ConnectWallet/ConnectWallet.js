@@ -1,5 +1,5 @@
 import {useEffect} from "react";
-import WalletAdaptorPhantom from "../../helpers/WalletAdaptorPhantom";
+import PhantomWalletAdaptor from "../../helpers/PhantomWalletAdaptor";
 
 export const ConnectWallet = (props) => {
     useEffect(() => {
@@ -8,12 +8,12 @@ export const ConnectWallet = (props) => {
     },[]);
 
     const onLoad = async () => {
-        const publicKey = await WalletAdaptorPhantom.isPhantomConnected();
+        const publicKey = await PhantomWalletAdaptor.isPhantomConnected();
         props.setWalletAddress(publicKey)
     };
 
     const onConnectWallet = async () => {
-        const publicKey = await WalletAdaptorPhantom.connectWallet()
+        const publicKey = await PhantomWalletAdaptor.connectWallet()
         props.setWalletAddress(publicKey);
     };
 

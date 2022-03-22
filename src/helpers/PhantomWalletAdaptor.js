@@ -1,6 +1,6 @@
 import {PHANTOM_WALLET_URL} from "../constants/Link";
 
-export default class WalletAdaptorPhantom {
+export default class PhantomWalletAdaptor {
 
     static isPhantomExist = () => {
         const {solana} = window

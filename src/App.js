@@ -1,7 +1,6 @@
 import {useState} from "react";
 import "styles/App.css";
 import ConnectWallet from "components/ConnectWallet/ConnectWallet";
-import {Token} from "./constants/Token";
 import AnchorClient from "./helpers/AnchorClient";
 
 const App = (props) => {
@@ -16,12 +15,12 @@ const App = (props) => {
 
     const depositToken = async () => {
         setInputValue("");
-        await anchorClient.depositToSolend(Token.USDC, +inputValue)
+        await anchorClient.deposit(inputValue)
     }
 
     const withdrawToken = async () => {
         setInputValue("");
-        await anchorClient.withdrawFromSolend(Token.USDC, +inputValue)
+        await anchorClient.withdraw(inputValue)
     }
 
 
@@ -48,8 +47,8 @@ const App = (props) => {
         <div className="App">
             <div className={walletAddress ? "authed-container" : "container"}>
                 <div className="header-container">
-                    <p className="header">Solend Connect</p>
-                    <p className="sub-text">🤑🤑🤑</p>
+                    <p className="header">LOTTO DEMO</p>
+                    <p className="sub-text">💲💲💲</p>
                     {!walletAddress && (
                         <ConnectWallet setWalletAddress={setWallet}/>
                     )}
