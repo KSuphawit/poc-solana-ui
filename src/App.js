@@ -50,7 +50,7 @@ const App = (props) => {
             <input
                 type="text"
                 className="deposit-input"
-                placeholder="Enter amount!"
+                placeholder="Minimum deposit 1 USDC."
                 value={inputValue}
                 onChange={(e) => {
                     setInputValue(e.target.value);
