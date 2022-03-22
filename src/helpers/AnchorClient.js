@@ -26,6 +26,11 @@ export default class AnchorClient {
         return [mainStatePDA, mainState]
     }
 
+    async getTotalDeposit() {
+        const [_, mainState] = await this.getMainStateAccount()
+        return mainState.totalDeposit
+    }
+
     async getMetadataAccount() {
         const [metadataPDA] = await web3.PublicKey.findProgramAddress([Buffer.from(METADATA_SEED)], this.programId)
         const metadata = await this.program.account.metadata.fetch(metadataPDA)
