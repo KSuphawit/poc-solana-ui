@@ -52,7 +52,7 @@
   color: white;
 }
 
-.submit-gif-button {
+.submit-button {
   background: -webkit-linear-gradient(left, #4e44ce, #35aee2);
   background-size: 200% 200%;
   animation: gradient-animation 4s ease infinite;
@@ -88,11 +88,18 @@
   object-fit: cover;
 }
 
+.connected-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .connected-container input[type="text"] {
   display: inline-block;
   color: white;
   padding: 20px;
-  width: 25%;
+  width: 80%;
   height: 60px;
   font-size: 16px;
   box-sizing: border-box;
@@ -104,4 +111,11 @@
 
 .connected-container button {
   height: 50px;
+}
+
+.transaction-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 35%;
 }

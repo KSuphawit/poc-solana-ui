@@ -1,15 +1,18 @@
 import {useState} from "react";
-import "./styles/App.css";
 import ConnectWallet from "components/ConnectWallet/ConnectWallet";
 import AnchorClient from "./helpers/AnchorClient";
 import CountUp from "react-countup";
+import UserStatus from "./components/UserStatus/UserStatus";
+import "./styles/App.css";
 
 const App = (props) => {
     const [walletAddress, setWalletAddress] = useState(null);
     const [inputValue, setInputValue] = useState("");
     const [anchorClient, setAnchorClient] = useState(null);
-    const [countUpStart, setCountUpStart] = useState(0);
-    const [countUpEnd, setCountUpEnd] = useState(0);
+    const [totalDepositStart, setTotalDepositStart] = useState(0);
+    const [totalDepositEnd, setTotalDepositEnd] = useState(0);
+    const [userDepositStart, setUserDepositStart] = useState(0);
+    const [userDepositEnd, setUserDepositEnd] = useState(0);
 
     const setWallet = async (publicKey) => {
         const anchorClient = new AnchorClient(props.cluster)
@@ -17,25 +20,36 @@ const App = (props) => {
         setWalletAddress(publicKey)
 
         const totalDeposit = await anchorClient.getTotalDeposit()
-        setCountUpEnd(totalDeposit)
+        setTotalDepositEnd(totalDeposit)
+
+        const userTotalDeposit = await anchorClient.getUserDepositAmount(publicKey)
+        setUserDepositEnd(userTotalDeposit)
     }
 
-    const depositToken = async () => {
+    const deposit = async () => {
         setInputValue("");
-        setCountUpStart(countUpEnd)
+        setTotalDepositStart(totalDepositEnd)
+        setUserDepositStart(userDepositEnd)
         await anchorClient.deposit(inputValue)
 
         const totalDeposit = await anchorClient.getTotalDeposit()
-        setCountUpEnd(totalDeposit)
+        setTotalDepositEnd(totalDeposit)
+
+        const userTotalDeposit = await anchorClient.getUserDepositAmount(walletAddress)
+        setUserDepositEnd(userTotalDeposit)
     }
 
-    const withdrawToken = async () => {
+    const withdraw = async () => {
         setInputValue("");
-        setCountUpStart(countUpEnd)
+        setTotalDepositStart(totalDepositEnd)
+        setUserDepositStart(userDepositEnd)
         await anchorClient.withdraw(inputValue)
 
         const totalDeposit = await anchorClient.getTotalDeposit()
-        setCountUpEnd(totalDeposit)
+        setTotalDepositEnd(totalDeposit)
+
+        const userTotalDeposit = await anchorClient.getUserDepositAmount(walletAddress)
+        setUserDepositEnd(userTotalDeposit)
     }
 
 
@@ -44,27 +58,30 @@ const App = (props) => {
             <p className="sub-text">Pool Balances</p>
             <p className="header">
                 <CountUp
-                    start={countUpStart}
-                    end={countUpEnd}
+                    start={totalDepositStart}
+                    end={totalDepositEnd}
                     prefix="$ "
                     separator=","
                     decimals={2}
                 />
             </p>
-            <input
-                type="text"
-                placeholder="Minimum deposit 1 USDC."
-                value={inputValue}
-                onChange={(e) => {
-                    setInputValue(e.target.value);
-                }}
-            />
-            <button type="submit" onClick={depositToken} className="cta-button submit-gif-button">
-                Deposit
-            </button>
-            <button type="submit" onClick={withdrawToken} className="cta-button submit-gif-button">
-                Withdraw
-            </button>
+            <div className="transaction-container">
+                <input
+                    type="text"
+                    placeholder="Minimum 1 USDC."
+                    value={inputValue}
+                    onChange={(e) => {
+                        setInputValue(e.target.value);
+                    }}
+                />
+                <button type="submit" onClick={deposit} className="cta-button submit-button">
+                    Deposit
+                </button>
+                <button type="submit" onClick={withdraw} className="cta-button submit-button">
+                    Withdraw
+                </button>
+            </div>
+            <UserStatus walletAddress={walletAddress} userDepositStart={userDepositStart} userDepositEnd={userDepositEnd}/>
         </div>
     );
 

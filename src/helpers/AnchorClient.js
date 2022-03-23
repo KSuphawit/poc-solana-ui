@@ -41,11 +41,12 @@ export default class AnchorClient {
     }
 
     async getUserDepositAccount(userPubKey) {
-        const [userDepositReferencePDA] = await web3.PublicKey.findProgramAddress([userPubKey.toBuffer()], this.programId)
+        const userPublicKey = new web3.PublicKey(userPubKey.toString())
+        const [userDepositReferencePDA] = await web3.PublicKey.findProgramAddress([userPublicKey.toBuffer()], this.programId)
         let userDepositReference = await this.program.account.userDepositReference.fetchNullable(userDepositReferencePDA)
 
         if (!userDepositReference) {
-            await this.depositInitialize(userPubKey)
+            await this.depositInitialize(userPublicKey)
             userDepositReference = await this.program.account.userDepositReference.fetch(userDepositReferencePDA)
         }
 
@@ -53,6 +54,14 @@ export default class AnchorClient {
         const userDeposit = await this.program.account.userDeposit.fetch(userDepositPDA)
 
         return [userDepositPDA, userDeposit]
+    }
+
+    async getUserDepositAmount(userPubKey) {
+        const [, userDeposit] = await this.getUserDepositAccount(userPubKey)
+        const [, metadata] = await this.getMetadataAccount()
+        const mintInfo = await this.getMintInfo(metadata.usdcMint)
+
+        return userDeposit.amount / Math.pow(10, mintInfo.decimals)
     }
 
     async depositInitialize(userPubKey) {
