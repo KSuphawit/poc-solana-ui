@@ -8,3 +8,31 @@
     width: 33%;
     color: black;
 }
+
+.user-status-header {
+    display: flex;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.user-status-detail {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: -20px;
+}
+
+.user-status-detail title {
+    margin: 0;
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 1.66;
+    letter-spacing: 0.1px;
+}
+
+.user-deposit-amount {
+    margin-top: -15px;
+}

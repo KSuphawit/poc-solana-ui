@@ -9,19 +9,25 @@ export const UserStatus = (props) => {
 
     return (
         <div className="user-status-container">
-            <h4>Your Status ({shortWalletAddress(props.walletAddress)})</h4>
-            <h3>
-                <CountUp
-                    start={props.userDepositStart}
-                    end={props.userDepositEnd}
-                    prefix="$ "
-                    separator=","
-                    decimals={2}
-                />
-            </h3>
+            <div className="user-status-header">
+                <h4>Your Status ({shortWalletAddress(props.walletAddress)})</h4>
+            </div>
+            <div className="user-status-detail">
+                <span className="title">All Deposits</span>
+                <div className="user-deposit-amount">
+                    <h1>
+                        <CountUp
+                            start={props.userDepositStart}
+                            end={props.userDepositEnd}
+                            prefix="$ "
+                            separator=","
+                            decimals={2}
+                        />
+                    </h1>
+                </div>
+            </div>
         </div>
     )
-
 }
 
 
