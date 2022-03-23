@@ -1,5 +1,6 @@
 import {useEffect} from "react";
 import PhantomWalletAdaptor from "../../helpers/PhantomWalletAdaptor";
+import "./ConnectWallet.css"
 
 export const ConnectWallet = (props) => {
     useEffect(() => {
@@ -25,7 +26,7 @@ export const ConnectWallet = (props) => {
                 className="cta-button connect-wallet-button"
                 onClick={onConnectWallet}
             >
-                Connect Phantom Wallet
+                Connect Wallet
             </button>
         </div>
     );

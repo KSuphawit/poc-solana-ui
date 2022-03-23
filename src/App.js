@@ -53,7 +53,6 @@ const App = (props) => {
             </p>
             <input
                 type="text"
-                className="deposit-input"
                 placeholder="Minimum deposit 1 USDC."
                 value={inputValue}
                 onChange={(e) => {
