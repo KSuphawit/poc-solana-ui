@@ -1,0 +1,849 @@
+{
+  "version": "0.1.0",
+  "name": "solscatter",
+  "instructions": [
+    {
+      "name": "initialize",
+      "accounts": [
+        {
+          "name": "mainState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "metadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "programAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "usdcMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "usdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "reserve",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collateral",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "obligation",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "lendingMarket",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lendingProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vrfClientState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vrfAccountInfo",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "callbackRequestRandomness",
+      "accounts": [
+        {
+          "name": "state",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vrf",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "requestRandomness",
+      "accounts": [
+        {
+          "name": "state",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "switchboardProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vrf",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "oracleQueue",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "queueAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "dataBuffer",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "permission",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrow",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "payerWallet",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "payerAuthority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "recentBlockhashes",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "programState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "RequestRandomnessParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "depositInitialize",
+      "accounts": [
+        {
+          "name": "userDeposit",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userDepositReference",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mainState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "depositor",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deposit",
+      "accounts": [
+        {
+          "name": "userDeposit",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mainState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "metadata",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "programAuthority",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdcMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "programUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collateral",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "reserve",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "reserveLiquiditySupply",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "reserveCollateralMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lendingMarket",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lendingMarketAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "destinationDepositCollateral",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "obligation",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "reserveLiquidityPythOracle",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "reserveLiquiditySwitchboardOracle",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lendingProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "DepositParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "withdraw",
+      "accounts": [
+        {
+          "name": "userDeposit",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mainState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "metadata",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "programAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "usdcMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "programUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collateral",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "reserve",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "obligation",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lendingMarket",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lendingMarketAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "reserveCollateralMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "reserveCollateralSupply",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "reserveLiquiditySupply",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "reserveLiquidityPythOracle",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "reserveLiquiditySwitchboardOracle",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lendingProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "WithdrawParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "startDrawingPhase",
+      "accounts": [
+        {
+          "name": "drawingResult",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mainState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "numberOfRewards",
+          "type": "u8"
+        },
+        {
+          "name": "randomNumbers",
+          "type": {
+            "vec": "u64"
+          }
+        }
+      ]
+    },
+    {
+      "name": "drawing",
+      "accounts": [
+        {
+          "name": "mainState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "drawingResult",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userDeposit",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "DrawingResult",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "state",
+            "type": {
+              "defined": "DrawingState"
+            }
+          },
+          {
+            "name": "numberOfRewards",
+            "type": "u8"
+          },
+          {
+            "name": "winners",
+            "type": {
+              "vec": {
+                "option": "publicKey"
+              }
+            }
+          },
+          {
+            "name": "randomNumbers",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "totalDeposit",
+            "type": "u64"
+          },
+          {
+            "name": "lastProcessedSlot",
+            "type": "u64"
+          },
+          {
+            "name": "finishedTimestamp",
+            "type": {
+              "option": "i64"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MainState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "currentSlot",
+            "type": "u64"
+          },
+          {
+            "name": "currentRound",
+            "type": "u64"
+          },
+          {
+            "name": "totalDeposit",
+            "type": "u64"
+          },
+          {
+            "name": "vrfAccountPubkey",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Metadata",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lendingProgram",
+            "type": "publicKey"
+          },
+          {
+            "name": "usdcMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "usdcTokenAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "programAuthority",
+            "type": "publicKey"
+          },
+          {
+            "name": "obligation",
+            "type": "publicKey"
+          },
+          {
+            "name": "reserve",
+            "type": "publicKey"
+          },
+          {
+            "name": "collateral",
+            "type": "publicKey"
+          },
+          {
+            "name": "lendingMarket",
+            "type": "publicKey"
+          },
+          {
+            "name": "lendingMarketAuthoritySeed",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserDepositReference",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserDeposit",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "slot",
+            "type": "u64"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "latestDepositTimestamp",
+            "type": {
+              "option": "i64"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "VrfClientState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "maxResult",
+            "type": "u64"
+          },
+          {
+            "name": "vrf",
+            "type": "publicKey"
+          },
+          {
+            "name": "resultBuffer",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "result",
+            "type": "u128"
+          },
+          {
+            "name": "lastTimestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "DepositParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "uiAmount",
+            "type": "f64"
+          },
+          {
+            "name": "decimals",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RequestRandomnessParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "clientStateBump",
+            "type": "u8"
+          },
+          {
+            "name": "permissionBump",
+            "type": "u8"
+          },
+          {
+            "name": "switchboardStateBump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "uiAmount",
+            "type": "f64"
+          },
+          {
+            "name": "decimals",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DrawingState",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Processing"
+          },
+          {
+            "name": "Finished"
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "ReceivedVrfEvent",
+      "fields": [
+        {
+          "name": "receivedTimestamp",
+          "type": "i64",
+          "index": false
+        },
+        {
+          "name": "counter",
+          "type": "u128",
+          "index": true
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "NumberOfRewardsMustMoreThanZero",
+      "msg": "number of rewards in drawing result must be greater than 0"
+    },
+    {
+      "code": 6001,
+      "name": "NumberOfRewardsMustLessOrEqualTen"
+    },
+    {
+      "code": 6002,
+      "name": "NumberOfRandomNumbersNotMatchWithNumberOfRewards",
+      "msg": "number of random numbers must equal to number of rewards"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidSwitchboardVrfAccount"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidCollateralMint",
+      "msg": "Invalid collateral mint"
+    },
+    {
+      "code": 6005,
+      "name": "InvalidCollateralOwner",
+      "msg": "Invalid collateral owner"
+    },
+    {
+      "code": 6006,
+      "name": "InsufficientAmount",
+      "msg": "Insufficient amount"
+    }
+  ],
+  "metadata": {
+    "address": "XLHiazeuERcG71CALhxbihc73GiPTwbaorMtpHzzesH"
+  }
+}

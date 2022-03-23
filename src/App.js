@@ -1,229 +1,102 @@
-import { useState } from "react";
-import { BN, utils, web3 } from "@project-serum/anchor";
-import {
-  ASSOCIATED_TOKEN_PROGRAM_ID,
-  Token,
-  TOKEN_PROGRAM_ID,
-} from "@solana/spl-token";
-import { TWITTER_HANDLE, TWITTER_LINK } from "constants/link";
-import twitterLogo from "assets/twitter-logo.svg";
-import "styles/App.css";
-import { getProgram, getProvider, PROGRAM_ID } from "shared/utils/utils";
-import ConnectWallet from "shared/components/ConnectWallet/ConnectWallet";
+import {useState} from "react";
+import ConnectWallet from "components/ConnectWallet/ConnectWallet";
+import AnchorClient from "./helpers/AnchorClient";
+import CountUp from "react-countup";
+import UserStatus from "./components/UserStatus/UserStatus";
+import "./styles/App.css";
 
 const App = (props) => {
-  const [walletAddress, setWalletAddress] = useState(null);
-  const [inputValue, setInputValue] = useState("");
-  const { PublicKey, SYSVAR_RENT_PUBKEY, SystemProgram } = web3;
-  const cluster = props.cluster;
+    const [walletAddress, setWalletAddress] = useState(null);
+    const [inputValue, setInputValue] = useState("");
+    const [anchorClient, setAnchorClient] = useState(null);
+    const [totalDepositStart, setTotalDepositStart] = useState(0);
+    const [totalDepositEnd, setTotalDepositEnd] = useState(0);
+    const [userDepositStart, setUserDepositStart] = useState(0);
+    const [userDepositEnd, setUserDepositEnd] = useState(0);
 
-  const callRpcDepositToken = async (e) => {
-    e.preventDefault();
-    setInputValue("");
-    try {
-      const provider = getProvider(cluster);
-      const program = getProgram(cluster);
-      const depositToken = new PublicKey(
-        "CuxuCrT6FCAc5SUoGDoMVuf7UCLwAvzUmseq4a9VBNqw"
-      );
-      const [returnToken, returnTokenBump] = await PublicKey.findProgramAddress(
-        [new TextEncoder().encode("token")],
-        PROGRAM_ID
-      );
-      const [programAuthority, programAuthorityBump] =
-        await PublicKey.findProgramAddress(
-          [Buffer.from(utils.bytes.utf8.encode("program_authority"))],
-          PROGRAM_ID
-        );
+    const setWallet = async (publicKey) => {
+        const anchorClient = new AnchorClient(props.cluster)
+        setAnchorClient(anchorClient)
+        setWalletAddress(publicKey)
 
-      console.log(
-        ">>>>>>>>>>>>>>>>>>>>>>> programAuthority : ",
-        programAuthority.toString()
-      );
+        const totalDeposit = await anchorClient.getTotalDeposit()
+        setTotalDepositEnd(totalDeposit)
 
-      const programDepositTokenAssocTokenAcct = (
-        await PublicKey.findProgramAddress(
-          [
-            programAuthority.toBuffer(),
-            TOKEN_PROGRAM_ID.toBuffer(),
-            depositToken.toBuffer(),
-          ],
-          ASSOCIATED_TOKEN_PROGRAM_ID
-        )
-      )[0];
-
-      const userDepositTokenAssocTokenAcct =
-        await Token.getAssociatedTokenAddress(
-          ASSOCIATED_TOKEN_PROGRAM_ID,
-          TOKEN_PROGRAM_ID,
-          depositToken,
-          provider.wallet.publicKey
-        );
-
-      const userReturnTokenAssocTokenAcct =
-        await Token.getAssociatedTokenAddress(
-          ASSOCIATED_TOKEN_PROGRAM_ID,
-          TOKEN_PROGRAM_ID,
-          returnToken,
-          provider.wallet.publicKey
-        );
-
-      const amount = +inputValue * Math.pow(10, 9);
-
-      const depositTokenResult = await program.rpc.depositToken(
-        new BN(amount),
-        {
-          accounts: {
-            depositToken: depositToken,
-            returnToken: returnToken,
-            programDepositTokenAssocTokenAcct:
-              programDepositTokenAssocTokenAcct,
-            userDepositTokenAssocTokenAcct: userDepositTokenAssocTokenAcct,
-            userReturnTokenAssocTokenAcct: userReturnTokenAssocTokenAcct,
-            user: provider.wallet.publicKey,
-            programAuthority: programAuthority,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            // associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-            // rent: SYSVAR_RENT_PUBKEY,
-            // systemProgram: SystemProgram.programId,
-          },
-        }
-      );
-
-      console.log("Result callRpcDepositToken", depositTokenResult);
-
-      // await callRpcMintToken();
-    } catch (error) {
-      console.log("Error callRpcDepositToken :", error);
+        const userTotalDeposit = await anchorClient.getUserDepositAmount(publicKey)
+        setUserDepositEnd(userTotalDeposit)
     }
-  };
 
-  const callRpcWithdrawToken = async (e) => {
-    e.preventDefault();
-    setInputValue("");
-    try {
-      const provider = getProvider(cluster);
-      const program = getProgram(cluster);
-      const withdrawToken = new PublicKey(
-        "CuxuCrT6FCAc5SUoGDoMVuf7UCLwAvzUmseq4a9VBNqw"
-      );
-      const [programAuthority, programAuthorityBump] =
-        await PublicKey.findProgramAddress(
-          [Buffer.from(utils.bytes.utf8.encode("program_authority"))],
-          PROGRAM_ID
-        );
-      const [burningToken, _] = await PublicKey.findProgramAddress(
-        [new TextEncoder().encode("token")],
-        PROGRAM_ID
-      );
+    const deposit = async () => {
+        setInputValue("");
+        setTotalDepositStart(totalDepositEnd)
+        setUserDepositStart(userDepositEnd)
+        await anchorClient.deposit(inputValue)
 
-      const programWithdrawTokenAssocTokenAcct = (
-        await PublicKey.findProgramAddress(
-          [
-            programAuthority.toBuffer(),
-            TOKEN_PROGRAM_ID.toBuffer(),
-            withdrawToken.toBuffer(),
-          ],
-          ASSOCIATED_TOKEN_PROGRAM_ID
-        )
-      )[0];
+        const totalDeposit = await anchorClient.getTotalDeposit()
+        setTotalDepositEnd(totalDeposit)
 
-      console.log(
-        ">>>>>>>>>>>>>>>>>>>>>>>>>>> programWithdrawTokenAssocTokenAcct ",
-        programWithdrawTokenAssocTokenAcct.toString()
-      );
-
-      const userWithdrawTokenAssocTokenAcct =
-        await Token.getAssociatedTokenAddress(
-          ASSOCIATED_TOKEN_PROGRAM_ID,
-          TOKEN_PROGRAM_ID,
-          withdrawToken,
-          provider.wallet.publicKey
-        );
-
-      console.log(
-        ">>>>>>>>>>>>>>>>>>>> userWithdrawTokenAssocTokenAcct ",
-        userWithdrawTokenAssocTokenAcct.toString()
-      );
-
-      const burningSource = await Token.getAssociatedTokenAddress(
-        ASSOCIATED_TOKEN_PROGRAM_ID,
-        TOKEN_PROGRAM_ID,
-        burningToken,
-        provider.wallet.publicKey
-      );
-
-      const amount = +inputValue * Math.pow(10, 9);
-
-      const withdrawTokenResult = await program.rpc.withdrawToken(
-        new BN(amount),
-        {
-          accounts: {
-            withdrawToken: withdrawToken,
-            burningToken: burningToken,
-            programWithdrawTokenAssocTokenAcct:
-              programWithdrawTokenAssocTokenAcct,
-            userWithdrawTokenAssocTokenAcct: userWithdrawTokenAssocTokenAcct,
-            burningSource: burningSource,
-            user: provider.wallet.publicKey,
-            programAuthority: programAuthority,
-            tokenProgram: TOKEN_PROGRAM_ID,
-          },
-        }
-      );
-
-      console.log("Result callRpcWithdrawToken", withdrawTokenResult);
-    } catch (error) {
-      console.log("Error callRpcWithdrawToken :", error);
+        const userTotalDeposit = await anchorClient.getUserDepositAmount(walletAddress)
+        setUserDepositEnd(userTotalDeposit)
     }
-  };
 
-  const renderInputAmount = () => (
-    <div className="connected-container">
-      <form onSubmit={callRpcDepositToken}>
-        <input
-          type="text"
-          placeholder="Enter token amount!"
-          value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-          }}
-        />
-        <button type="submit" className="cta-button submit-gif-button">
-          Deposit Token
-        </button>
-      </form>
-      <form onSubmit={callRpcWithdrawToken}>
-        <button type="submit" className="cta-button submit-gif-button">
-          Withdraw Token
-        </button>
-      </form>
-    </div>
-  );
+    const withdraw = async () => {
+        setInputValue("");
+        setTotalDepositStart(totalDepositEnd)
+        setUserDepositStart(userDepositEnd)
+        await anchorClient.withdraw(inputValue)
 
-  return (
-    <div className="App">
-      <div className={walletAddress ? "authed-container" : "container"}>
-        <div className="header-container">
-          <p className="header">💰💰 Rich Portal</p>
-          <p className="sub-text">become rich with us 🤑</p>
-          {!walletAddress && (
-            <ConnectWallet setWalletAddress={setWalletAddress} />
-          )}
-          {walletAddress && renderInputAmount()}
+        const totalDeposit = await anchorClient.getTotalDeposit()
+        setTotalDepositEnd(totalDeposit)
+
+        const userTotalDeposit = await anchorClient.getUserDepositAmount(walletAddress)
+        setUserDepositEnd(userTotalDeposit)
+    }
+
+
+    const renderConnected = () => (
+        <div className="connected-container">
+            <p className="sub-text">Pool Balances</p>
+            <p className="header gradient-text">
+                <CountUp
+                    start={totalDepositStart}
+                    end={totalDepositEnd}
+                    prefix="$ "
+                    separator=","
+                    decimals={2}
+                />
+            </p>
+            <div className="transaction-container">
+                <input
+                    type="text"
+                    placeholder="Minimum 1 USDC."
+                    value={inputValue}
+                    onChange={(e) => {
+                        setInputValue(e.target.value);
+                    }}
+                />
+                <button type="submit" onClick={deposit} className="cta-button submit-button">
+                    Deposit
+                </button>
+                <button type="submit" onClick={withdraw} className="cta-button submit-button">
+                    Withdraw
+                </button>
+            </div>
+            <UserStatus walletAddress={walletAddress} userDepositStart={userDepositStart} userDepositEnd={userDepositEnd}/>
         </div>
-        <div className="footer-container">
-          <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
-          <a
-            className="footer-text"
-            href={TWITTER_LINK}
-            target="_blank"
-            rel="noreferrer"
-          >{`built on @${TWITTER_HANDLE}`}</a>
+    );
+
+    return (
+        <div className="App">
+            <div className={walletAddress ? "authed-container" : "container"}>
+                <div className="header-container">
+                    {!walletAddress && (
+                        <ConnectWallet setWalletAddress={setWallet}/>
+                    )}
+                    {walletAddress && renderConnected()}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default App;
