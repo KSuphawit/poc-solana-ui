@@ -68,7 +68,7 @@ const App = (props) => {
             <div className="transaction-container">
                 <input
                     type="text"
-                    placeholder="Minimum 1 USDC."
+                    placeholder="USDC Amount"
                     value={inputValue}
                     onChange={(e) => {
                         setInputValue(e.target.value);
