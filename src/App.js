@@ -56,7 +56,7 @@ const App = (props) => {
     const renderConnected = () => (
         <div className="connected-container">
             <p className="sub-text">Pool Balances</p>
-            <p className="header">
+            <p className="header gradient-text">
                 <CountUp
                     start={totalDepositStart}
                     end={totalDepositEnd}
