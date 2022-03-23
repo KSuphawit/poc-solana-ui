@@ -1,5 +1,5 @@
 import {useState} from "react";
-import "styles/App.css";
+import "./styles/App.css";
 import ConnectWallet from "components/ConnectWallet/ConnectWallet";
 import AnchorClient from "./helpers/AnchorClient";
 import CountUp from "react-countup";
@@ -31,7 +31,11 @@ const App = (props) => {
 
     const withdrawToken = async () => {
         setInputValue("");
+        setCountUpStart(countUpEnd)
         await anchorClient.withdraw(inputValue)
+
+        const totalDeposit = await anchorClient.getTotalDeposit()
+        setCountUpEnd(totalDeposit)
     }
 
 
@@ -57,11 +61,11 @@ const App = (props) => {
                 }}
             />
             <button type="submit" onClick={depositToken} className="cta-button submit-gif-button">
-                Deposit Token
+                Deposit
             </button>
-            {/*<button type="submit" onClick={withdrawToken} className="cta-button submit-gif-button">*/}
-            {/*    Withdraw Token*/}
-            {/*</button>*/}
+            <button type="submit" onClick={withdrawToken} className="cta-button submit-gif-button">
+                Withdraw
+            </button>
         </div>
     );
 
