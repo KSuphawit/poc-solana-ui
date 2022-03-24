@@ -36,8 +36,13 @@
           "isSigner": false
         },
         {
-          "name": "collateral",
+          "name": "reserveCollateralMint",
           "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collateralTokenAccount",
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -267,7 +272,7 @@
           "isSigner": false
         },
         {
-          "name": "collateral",
+          "name": "programCollateralTokenAccount",
           "isMut": true,
           "isSigner": false
         },
@@ -385,7 +390,7 @@
           "isSigner": false
         },
         {
-          "name": "collateral",
+          "name": "programCollateralTokenAccount",
           "isMut": true,
           "isSigner": false
         },
@@ -478,12 +483,107 @@
           "isSigner": false
         },
         {
+          "name": "collateralMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "drawingPda",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "drawingRewardTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "signer",
           "isMut": true,
           "isSigner": true
         },
         {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "sourceCollateral",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "destinationCollateral",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "withdrawReserve",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "obligation",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lendingMarket",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lendingMarketAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "destinationLiquidity",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "reserveCollateralMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "reserveLiquiditySupply",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "obligationOwner",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "solendProgramAddress",
           "isMut": false,
           "isSigner": false
         }
@@ -543,6 +643,10 @@
             "type": {
               "defined": "DrawingState"
             }
+          },
+          {
+            "name": "rewardAmount",
+            "type": "u64"
           },
           {
             "name": "numberOfRewards",
@@ -633,7 +737,7 @@
             "type": "publicKey"
           },
           {
-            "name": "collateral",
+            "name": "collateralTokenAccount",
             "type": "publicKey"
           },
           {
@@ -829,21 +933,22 @@
     },
     {
       "code": 6004,
-      "name": "InvalidCollateralMint",
-      "msg": "Invalid collateral mint"
+      "name": "InsufficientAmount"
     },
     {
       "code": 6005,
-      "name": "InvalidCollateralOwner",
-      "msg": "Invalid collateral owner"
+      "name": "YieldLessOrEqualZero"
     },
     {
       "code": 6006,
-      "name": "InsufficientAmount",
-      "msg": "Insufficient amount"
+      "name": "YieldMoreThanTotalDeposit"
+    },
+    {
+      "code": 6007,
+      "name": "NoDepositInObligation"
     }
   ],
   "metadata": {
-    "address": "XLHiazeuERcG71CALhxbihc73GiPTwbaorMtpHzzesH"
+    "address": "2DGGNTArZZCY9P1JaAuPn548fWe9hRTM92BgVF8bJgyS"
   }
 }
