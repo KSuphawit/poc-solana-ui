@@ -40,34 +40,39 @@ export default class AnchorClient {
         return [metadataPDA, metadata]
     }
 
-    async getUserDepositAccount(userPubKey) {
+    async getUserDepositAccount(userPubKey, initialize = true) {
         const userPublicKey = new web3.PublicKey(userPubKey.toString())
         const [userDepositReferencePDA] = await web3.PublicKey.findProgramAddress([userPublicKey.toBuffer()], this.programId)
         let userDepositReference = await this.program.account.userDepositReference.fetchNullable(userDepositReferencePDA)
+
+        if (!userDepositReference && !initialize) return [null, null]
 
         if (!userDepositReference) {
             await this.depositInitialize(userPublicKey)
             userDepositReference = await this.program.account.userDepositReference.fetch(userDepositReferencePDA)
         }
 
-        const [userDepositPDA] = await web3.PublicKey.findProgramAddress([Buffer.from(new BN(userDepositReference.slot).toArray("le", 8))], this.programId)
+        const [userDepositPDA] = await web3.PublicKey.findProgramAddress([Buffer.from(userDepositReference.slot.toArray("le", 8))], this.programId)
         const userDeposit = await this.program.account.userDeposit.fetch(userDepositPDA)
 
         return [userDepositPDA, userDeposit]
     }
 
     async getUserDepositAmount(userPubKey) {
-        const [, userDeposit] = await this.getUserDepositAccount(userPubKey)
+        const [, userDeposit] = await this.getUserDepositAccount(userPubKey, false)
         const [, metadata] = await this.getMetadataAccount()
         const mintInfo = await this.getMintInfo(metadata.usdcMint)
+
+        if (!userDeposit) return 0;
 
         return userDeposit.amount / Math.pow(10, mintInfo.decimals)
     }
 
     async depositInitialize(userPubKey) {
+        const userPublicKey =  new web3.PublicKey(userPubKey.toString())
         const [mainStatePDA, mainState] = await this.getMainStateAccount()
-        const newSlot = new BN(mainState.currentSlot).add(1)
-        const [userDepositReference] = web3.PublicKey.findProgramAddress([userPubKey.toBuffer()], this.programId)
+        const newSlot = mainState.currentSlot.add(new BN(1))
+        const [userDepositReference] = await web3.PublicKey.findProgramAddress([userPublicKey.toBuffer()], this.programId)
         const [userDepositPDA] = await web3.PublicKey.findProgramAddress([Buffer.from(newSlot.toArray("le", 8))], this.programId)
 
         await this.program.rpc.depositInitialize({

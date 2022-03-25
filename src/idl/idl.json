@@ -703,6 +703,18 @@
           {
             "name": "vrfAccountPubkey",
             "type": "publicKey"
+          },
+          {
+            "name": "penaltyPeriod",
+            "type": "i64"
+          },
+          {
+            "name": "penaltyFee",
+            "type": "f64"
+          },
+          {
+            "name": "defaultFee",
+            "type": "f64"
           }
         ]
       }
@@ -775,6 +787,10 @@
           {
             "name": "amount",
             "type": "u64"
+          },
+          {
+            "name": "penaltyFee",
+            "type": "f64"
           },
           {
             "name": "owner",
@@ -949,6 +965,6 @@
     }
   ],
   "metadata": {
-    "address": "2DGGNTArZZCY9P1JaAuPn548fWe9hRTM92BgVF8bJgyS"
+    "address": "BzxshYSrD3KdLeQHMpXFPdgtfcwUUky5jeBefFbYqrxd"
   }
 }
